@@ -1,21 +1,22 @@
 package com.studyolle.account;
 
+import com.studyolle.domain.Account;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -45,19 +46,19 @@ class AccountControllerTest {
 
     @DisplayName("회원 가입 처리 - 입력값 오류")
     @Test
-    void sigUpSubmit_with_wrong_input() throws Exception {
+    void signUpSubmit_with_wrong_input() throws Exception {
         mockMvc.perform(post("/sign-up")
                         .param("nickname", "keesun")
                         .param("email", "email..")
                         .param("password", "12345")
-                        .with(csrf())) // form을 보낼때는 CSRF 토큰이 필요함
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/sign-up"));
     }
 
     @DisplayName("회원 가입 처리 - 입력값 정상")
     @Test
-    void sigUpSubmit_with_correct_input() throws Exception {
+    void signUpSubmit_with_correct_input() throws Exception {
         mockMvc.perform(post("/sign-up")
                         .param("nickname", "choijiho")
                         .param("email", "wlghsp@gmail.com")
@@ -66,9 +67,10 @@ class AccountControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"));
 
-        assertTrue(accountRepository.existsByEmail("wlghsp@gmail.com"));
+        Account account = accountRepository.findByEmail("wlghsp@gmail.com");
+        assertNotNull(account);
+        assertNotEquals(account.getPassword(), "12345678");
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
-
 
 }
