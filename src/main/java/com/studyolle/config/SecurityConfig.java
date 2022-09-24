@@ -24,25 +24,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring()
+                .mvcMatchers("/node_modules/**")
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
-
-    //    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http.authorizeRequests()
-//                .mvcMatchers("/", "/login", "/sign-up", "/check-email", "/check-email-token",
-//                        "/email-login", "/check-email-login", "/login-link").permitAll()
-//                .mvcMatchers(HttpMethod.GET, "/profile/*").permitAll()
-//                .anyRequest().authenticated();
-//
-//    }
-//
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web -> web.ignoring()
-//                .mvcMatchers("/node_modules/**")
-//                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()));
-//    }
 
 }
